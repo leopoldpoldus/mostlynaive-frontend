@@ -72,7 +72,7 @@ const VoiceRecorder = () => {
         setAnswer(answer);
 
         // speak
-        const speechConfig = sdk.SpeechConfig.fromSubscription(process.env.REACT_APP_SPEECH_KEY, process.env.REACT_APP_SPEECH_REGION);
+        const speechConfig = sdk.SpeechConfig.fromSubscription('82af840d5ab04281a4c13e6dc721cc28', 'germanywestcentral');
         const audioConfig = sdk.AudioConfig.fromDefaultSpeakerOutput();
         speechConfig.speechSynthesisVoiceName = 'de-DE-KlarissaNeural'
         var synthesizer = new sdk.SpeechSynthesizer(speechConfig, audioConfig);

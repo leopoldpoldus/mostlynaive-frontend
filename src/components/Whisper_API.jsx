@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+
+
 async function WhisperTranscription(file) {
     const url = 'https://api.openai.com/v1/audio/transcriptions';
     const formData = new FormData();
@@ -8,7 +10,7 @@ async function WhisperTranscription(file) {
     formData.append('language', 'de');
     const config = {
       headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+        Authorization: `Bearer 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`,
         'Content-Type': 'multipart/form-data',
       },
     };
