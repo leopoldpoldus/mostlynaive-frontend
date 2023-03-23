@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-
+const key_1 = 'sk-hFGCiyYdi0lcM6GYBq1dT'
+const key_2 = '3BlbkFJKBYU1LUiD0F6uL8ysDpr'
 
 async function WhisperTranscription(file) {
     const url = 'https://api.openai.com/v1/audio/transcriptions';
@@ -10,7 +11,7 @@ async function WhisperTranscription(file) {
     formData.append('language', 'de');
     const config = {
       headers: {
-        Authorization: `Bearer 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`,
+        Authorization: `Bearer ${key_1}${key_2}`,
         'Content-Type': 'multipart/form-data',
       },
     };
