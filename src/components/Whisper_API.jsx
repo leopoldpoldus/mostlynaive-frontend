@@ -8,7 +8,7 @@ async function WhisperTranscription(file) {
     formData.append('language', 'de');
     const config = {
       headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+        Authorization: `Bearer ${process.env.VITE_OPENAI_API_KEY}`,
         'Content-Type': 'multipart/form-data',
       },
     };

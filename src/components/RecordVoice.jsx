@@ -72,7 +72,7 @@ const VoiceRecorder = () => {
         setAnswer(answer);
 
         // speak
-        const speechConfig = sdk.SpeechConfig.fromSubscription(import.meta.env.VITE_SPEECH_KEY, import.meta.env.VITE_SPEECH_REGION);
+        const speechConfig = sdk.SpeechConfig.fromSubscription(process.env.VITE_SPEECH_KEY, process.env.VITE_SPEECH_REGION);
         const audioConfig = sdk.AudioConfig.fromDefaultSpeakerOutput();
         speechConfig.speechSynthesisVoiceName = 'de-DE-KlarissaNeural'
         var synthesizer = new sdk.SpeechSynthesizer(speechConfig, audioConfig);
