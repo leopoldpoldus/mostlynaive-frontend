@@ -69,6 +69,7 @@ const VoiceRecorder = () => {
     const speak = (text) => {
         // speak
         const speechConfig = sdk.SpeechConfig.fromSubscription('82af840d5ab04281a4c13e6dc721cc28', 'germanywestcentral');
+        // no audio output
         const audioConfig = sdk.AudioConfig.fromDefaultSpeakerOutput();
         if (language === 'de') {
             speechConfig.speechSynthesisVoiceName = 'de-DE-KlarissaNeural'
@@ -82,6 +83,16 @@ const VoiceRecorder = () => {
         // speechConfig.speechSynthesisVoiceName = 'de-DE-KlarissaNeural'
         var synthesizer = new sdk.SpeechSynthesizer(speechConfig, audioConfig);
         synthesizer.speakTextAsync(text, (result) => {
+            // const audioBlob = new Blob(result.audioData, {type: 'audio/wav'});
+            // const audio_url = URL.createObjectURL(audioBlob);
+            // axios.post('https://api.d-id.com/talks', {
+            //     "source_url": "./head.png",
+            //     "script": {
+            //         "type": "audio",
+            //         "audio_url": audio_url
+            //     }})
+
+
                 if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
                     console.log("synthesis finished.");
                 } else {
@@ -148,11 +159,7 @@ const VoiceRecorder = () => {
         // add to transcript
         setTranscript(transcript_new);
         setAnswer('');
-        // // send to parent
-        // props.getTranscript(transcript_new);
-        // resetRecordin
-        // console.log(transcript)
-        // connectToChat(transcript_new);
+
 
 
         // send transcript to backend
@@ -162,6 +169,8 @@ const VoiceRecorder = () => {
         const response = await axios.get(url, {params: {text: transcript_new, language: language}})
         // console.log(response.data);
         const answer = response.data.response;
+
+
 
         speak(answer)
         console.log(answer)

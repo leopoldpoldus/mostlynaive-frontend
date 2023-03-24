@@ -32,6 +32,8 @@ const App = () => {
             {/*<AnimatedAvatar />*/}
             <RecordVoice/>
             {/*<ChatComponent/>*/}
+            <div className={'Logo'}/>
+
         </div>
     );
 };
