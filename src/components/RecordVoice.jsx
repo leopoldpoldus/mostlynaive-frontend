@@ -2,7 +2,7 @@ import React, {useState, useRef, useEffect} from 'react';
 import WhisperTranscription from "./Whisper_API.jsx";
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import axios from 'axios';
-import './RecordVoice.css';
+// import './RecordVoice.css';
 import 'eventsource-polyfill'
 
 
@@ -15,6 +15,7 @@ const VoiceRecorder = () => {
     const [sentences, setSentences] = useState([]);
     const [currentSentence, setCurrentSentence] = useState('');
     const [language, setLanguage] = useState('de');
+    const [isLoading, setIsLoading] = useState(false);
 
     const [answer, setAnswer] = useState('');
     const mediaRecorder = useRef(null);
@@ -73,24 +74,22 @@ const VoiceRecorder = () => {
         const audioConfig = sdk.AudioConfig.fromDefaultSpeakerOutput();
         if (language === 'de') {
             speechConfig.speechSynthesisVoiceName = 'de-DE-KlarissaNeural'
-        }
-        else if (language === 'ch') {
+        } else if (language === 'ch') {
             speechConfig.speechSynthesisVoiceName = 'de-CH-LeniNeural'
-        }
-        else {
+        } else {
             speechConfig.speechSynthesisVoiceName = 'en-US-AriaNeural'
         }
         // speechConfig.speechSynthesisVoiceName = 'de-DE-KlarissaNeural'
         var synthesizer = new sdk.SpeechSynthesizer(speechConfig, audioConfig);
         synthesizer.speakTextAsync(text, (result) => {
-            // const audioBlob = new Blob(result.audioData, {type: 'audio/wav'});
-            // const audio_url = URL.createObjectURL(audioBlob);
-            // axios.post('https://api.d-id.com/talks', {
-            //     "source_url": "./head.png",
-            //     "script": {
-            //         "type": "audio",
-            //         "audio_url": audio_url
-            //     }})
+                // const audioBlob = new Blob(result.audioData, {type: 'audio/wav'});
+                // const audio_url = URL.createObjectURL(audioBlob);
+                // axios.post('https://api.d-id.com/talks', {
+                //     "source_url": "./head.png",
+                //     "script": {
+                //         "type": "audio",
+                //         "audio_url": audio_url
+                //     }})
 
 
                 if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
@@ -161,41 +160,80 @@ const VoiceRecorder = () => {
         setAnswer('');
 
 
-
         // send transcript to backend
         const url = '/api/chatbot';
         //
         //
-        const response = await axios.get(url, {params: {text: transcript_new, language: language}})
-        // console.log(response.data);
-        const answer = response.data.response;
-
-
-
-        speak(answer)
-        console.log(answer)
-
-        // // set answer
-        setAnswer(answer);
+        setIsLoading(true);
+        axios.get(url, {params: {text: transcript_new, language: language}}).then(
+            (response) => {
+                setIsLoading(false);
+                speak(response.data.response);
+                setAnswer(response.data.response);
+            }).catch((error) => {
+            setIsLoading(false);
+            console.log(error);
+        })
     };
 
 
     return (
         <div>
-            <button className={"record-button"} onClick={isRecording ? stopRecording : startRecording}>
-                {isRecording ? 'Stop Recording' : 'Start Recording'}
-            </button>
-            <select className={'language-selector'} onChange={(e) => setLanguage(e.target.value)}>
-                <option value="de">Deutsch</option>
-                <option value="en">English</option>
-                <option value="ch">Schweizerdeutsch</option>
-            </select>
-            <div className={'transcript'}>
-                {/*<p>{transcript ? Du: {transcript} : 'Start Recording'}</p>*/}
-                <p>{transcript ? 'Du: ' + transcript : ''}</p>
-                <p>{answer ? 'Mia: ' + answer : ''}</p>
-
+            <div className="absolute top-0 left-0 mt-4 ml-4">
+                <button className={`bg-red-600 text-white py-2 px-4 rounded-full focus:outline-none ${
+                    isRecording ? 'transition duration-200 ease-in-out animate-pulse' : ''
+                }`}
+                        onClick={isRecording ? stopRecording : startRecording}>
+                    {isRecording ? 'Stop Recording' : 'Start Recording'}
+                </button>
             </div>
+
+
+            <div className="absolute top-0 right-0 mt-4 mr-4">
+                <select
+                    class="block bg-gray-800 border border-gray-600 hover:border-gray-400 text-gray-300 px-4 py-3 rounded-lg shadow-sm focus:outline-none focus:border-gray-400"
+                    onChange={(e) => setLanguage(e.target.value)}>
+                    <option value="de">Deutsch</option>
+                    <option value="en">English</option>
+                    <option value="ch">Schweizerdeutsch</option>
+                </select>
+            </div>
+            <div className="h-2/3 w-2/3 mx-auto bg-gray-800 rounded overflow-hidden">
+                <div className="border-b border-gray-700 py-2 px-4 bg-gray-600">
+                    <p className="text-xl font-semibold text-white">Conversation</p>
+                </div>
+                <div className="h-[200vh] overflow-auto px-4 py-2">
+                    <div className="flex flex-col">
+
+                        <p class="mb-2 text-gray-300 text-lg">{transcript ? 'Du: ' + transcript : ''}</p>
+                        {isLoading ? (
+                            <div className="flex items-center justify-center">
+                                <svg
+                                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                            strokeWidth="4"/>
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    />
+                                </svg>
+                                <p className="text-white">Loading...</p>
+                            </div>
+                        ) : (
+                            <div className="h-80% w-60% mx-auto bg-gray-800 rounded-lg overflow-hidden">
+                                {/* Display fetched data here */}
+                            </div>
+                        )}
+                        <p class="mb-2 text-gray-300 text-lg">{answer ? 'Mia: ' + answer : ''}</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     );
 };

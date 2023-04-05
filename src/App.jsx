@@ -28,11 +28,12 @@ function AnimatedAvatar() {
 const App = () => {
 
     return (
-        <div className={'app'}>
+        <div class="bg-gray-900 w-full h-full">
             {/*<AnimatedAvatar />*/}
             <RecordVoice/>
             {/*<ChatComponent/>*/}
-            <div className={'Logo'}/>
+            {/*<div className={'Logo'}/>*/}
+
 
         </div>
     );
